@@ -39,7 +39,14 @@ app.post( "/api/notes", ( req, res ) => {
 } );
 
 app.delete( "/api/notes/:id", ( req, res ) => {
-
+  fs.readFile( `${ __dirname }/db/db.json`, "utf-8" )
+  .then( data => {
+    const parsedData = JSON.parse( data );
+    const updatedNotes = parsedData.filter( note => note.id !== req.params.id );
+    return fs.writeFile( `${ __dirname }/db/db.json`, JSON.stringify( updatedNotes ), "utf-8" );
+  } )
+  .then( () => res.status( 200 ).json( { status : "success", message : "Note deleted" } ) )
+  .catch( error => error );
 } );
 
 app.listen( port, () => {
