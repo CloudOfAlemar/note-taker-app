@@ -1,7 +1,8 @@
 
 const fs = require( "fs/promises" );
-const express = require( "express" );
 const path = require( "path" );
+const express = require( "express" );
+const { v4 : uuidv4 } = require( "uuid" );
 
 const app = express();
 const port = 3000;
@@ -29,11 +30,16 @@ app.post( "/api/notes", ( req, res ) => {
   fs.readFile( `${ __dirname }/db/db.json`, "utf-8" )
   .then( data => {
     const parsedData = JSON.parse( data );
+    req.body.id = uuidv4();
     parsedData.push( req.body );
     return fs.writeFile( `${ __dirname }/db/db.json`, JSON.stringify( parsedData ),"utf-8" );
   } )
   .then( () => res.status( 201 ).json( { status : "success", message : "Note saved" } ) )
   .catch( error => error );
+} );
+
+app.delete( "/api/notes/:id", ( req, res ) => {
+
 } );
 
 app.listen( port, () => {
